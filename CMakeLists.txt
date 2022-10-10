@@ -8,11 +8,19 @@ set(VERSION "1.2.12")
 option(ASM686 "Enable building i686 assembly implementation")
 option(AMD64 "Enable building amd64 assembly implementation")
 
-set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Installation directory for executables")
-set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
-set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
-set(INSTALL_MAN_DIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Installation directory for manual pages")
-set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
+IF(${UNIX})
+    set(MYGE_TARGET_PLATFORM "Linux")
+ELSEIF(${WIN32})
+    set(MYGE_TARGET_PLATFORM "Windows")
+ENDIF(${UNIX})
+
+set(MYGE_EXTERNAL_ROOT ${PROJECT_BINARY_DIR}/../../${MYGE_TARGET_PLATFORM})
+
+set(INSTALL_BIN_DIR "${MYGE_EXTERNAL_ROOT}/bin" CACHE PATH "Installation directory for executables")
+set(INSTALL_LIB_DIR "${MYGE_EXTERNAL_ROOT}/lib" CACHE PATH "Installation directory for libraries")
+set(INSTALL_INC_DIR "${MYGE_EXTERNAL_ROOT}/include/zlib" CACHE PATH "Installation directory for headers")
+set(INSTALL_MAN_DIR "${MYGE_EXTERNAL_ROOT}/share/man" CACHE PATH "Installation directory for manual pages")
+set(INSTALL_PKGCONFIG_DIR "${MYGE_EXTERNAL_ROOT}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
 
 include(CheckTypeSize)
 include(CheckFunctionExists)
@@ -213,8 +221,24 @@ endif()
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
     install(TARGETS zlib zlibstatic
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
-        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}"
-        LIBRARY DESTINATION "${INSTALL_LIB_DIR}" )
+        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Debug"
+        LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Debug"
+        CONFIGURATIONS Debug
+    )
+
+    if(MSVC)
+        install(FILES ${PROJECT_BINARY_DIR}/Debug/zlibd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
+            FILES ${PROJECT_BINARY_DIR}/Debug/zlibstaticd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
+            CONFIGURATIONS Debug
+        )
+    endif(MSVC)
+
+    install(TARGETS zlib zlibstatic
+        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Release"
+        LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Release"
+        CONFIGURATIONS Release
+    )
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
     install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}")

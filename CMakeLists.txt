@@ -219,7 +219,14 @@ elseif(BUILD_SHARED_LIBS AND WIN32)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
-    install(TARGETS zlib zlibstatic
+    # install(TARGETS zlib zlibstatic
+    #     RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+    #     ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Debug"
+    #     LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Debug"
+    #     CONFIGURATIONS Debug
+    # )
+    # Not install sharedLib
+    install(TARGETS zlibstatic
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
         ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Debug"
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Debug"
@@ -227,13 +234,19 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
     )
 
     if(MSVC)
-        install(FILES ${PROJECT_BINARY_DIR}/Debug/zlibd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
-            FILES ${PROJECT_BINARY_DIR}/Debug/zlibstaticd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
+        install(FILES ${PROJECT_BINARY_DIR}/Debug/zlibstaticd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
+            # FILES ${PROJECT_BINARY_DIR}/Debug/zlibd.pdb DESTINATION "${INSTALL_LIB_DIR}/Debug"
             CONFIGURATIONS Debug
         )
     endif(MSVC)
 
-    install(TARGETS zlib zlibstatic
+    # install(TARGETS zlib zlibstatic
+    #     RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+    #     ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Release"
+    #     LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Release"
+    #     CONFIGURATIONS Release
+    # )
+    install(TARGETS zlibstatic
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
         ARCHIVE DESTINATION "${INSTALL_LIB_DIR}/Release"
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}/Release"
